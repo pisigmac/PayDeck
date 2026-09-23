@@ -12,6 +12,7 @@
 [![Node.js](https://img.shields.io/badge/Node.js-18+-339933?logo=node.js)](https://nodejs.org/)
 [![Go SDK](https://img.shields.io/badge/SDK-Go-00ADD8?logo=go)](sdks/go/paydeck)
 [![Python SDK](https://img.shields.io/badge/SDK-Python-3776AB?logo=python)](sdks/python)
+[![PyPI - Version](https://img.shields.io/pypi/v/paydeck?color=blue&logo=pypi)](https://pypi.org/project/paydeck/)
 
 <p align="center">
   <b>A unified, edge-ready payment microservice that insulates your products from gateway complexities.</b><br>
@@ -231,6 +232,10 @@ order, err := client.CreateOrder(context.Background(), paydeck.CreateOrderReques
 ```
 
 ### Python
+```bash
+pip install paydeck
+```
+
 ```python
 from paydeck import PayDeckClient
 
