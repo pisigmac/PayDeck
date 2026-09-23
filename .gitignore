@@ -14,4 +14,10 @@ coverage/
 logs/
 .env
 .venv/
-
+build/
+*.egg-info/
+*.egg
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
