@@ -4,13 +4,13 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "paydeck"
-version = "1.0.0"
+version = "1.0.1"
 description = "Official Python SDK for PayDeck billing microservice"
 readme = "README.md"
 requires-python = ">=3.8"
 license = "MIT"
 authors = [
-    { name = "PiSigma / PayDeck Team", email = "dev@pisigma.org" }
+    { name = "Vikas Budde (codecraker)", email = "vikas.budde@hotmail.com" }
 ]
 keywords = ["paydeck", "billing", "razorpay", "stripe", "payments", "sdk"]
 classifiers = [
@@ -29,3 +29,4 @@ dependencies = []
 [project.urls]
 Homepage = "https://github.com/pisigmac/PayDeck"
 Repository = "https://github.com/pisigmac/PayDeck.git"
+Author = "https://github.com/codecraker"
