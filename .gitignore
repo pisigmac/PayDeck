@@ -1,0 +1,17 @@
+node_modules/
+dist/
+data/
+*.db
+*.db-wal
+*.db-shm
+.dev.vars
+.env
+.env.local
+.wrangler/
+coverage/
+*backlog*.md
+*gap*.md
+logs/
+.env
+.venv/
+

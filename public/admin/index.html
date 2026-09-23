@@ -1,0 +1,1377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PayDeck — Web Admin Dashboard</title>
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --border-color: #334155;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --info: #3b82f6;
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      font-family: var(--font-family);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background-color: var(--card-bg);
+      border-bottom: 1px solid var(--border-color);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .brand-badge {
+      background-color: rgba(99, 102, 241, 0.2);
+      color: #818cf8;
+      font-size: 0.75rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .token-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .token-bar input {
+      background: #0f172a;
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 0.4rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      width: 260px;
+    }
+
+    .nav-tabs {
+      display: flex;
+      background-color: #1e293b;
+      border-bottom: 1px solid var(--border-color);
+      padding: 0 2rem;
+      gap: 0.5rem;
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      padding: 0.85rem 1.25rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-main);
+    }
+
+    .tab-btn.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+
+    main {
+      flex: 1;
+      padding: 2rem;
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 600;
+    }
+
+    .btn {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .btn:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .btn-secondary {
+      background-color: #334155;
+      color: var(--text-main);
+    }
+
+    .btn-secondary:hover {
+      background-color: #475569;
+    }
+
+    .btn-danger {
+      background-color: var(--danger);
+    }
+
+    .btn-danger:hover {
+      background-color: #dc2626;
+    }
+
+    .btn-sm {
+      padding: 0.25rem 0.6rem;
+      font-size: 0.775rem;
+    }
+
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.875rem;
+    }
+
+    th, td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    th {
+      background-color: rgba(15, 23, 42, 0.5);
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+    }
+
+    tr:hover {
+      background-color: rgba(255, 255, 255, 0.02);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .badge-success { background-color: rgba(16, 185, 129, 0.2); color: #34d399; }
+    .badge-danger { background-color: rgba(239, 68, 68, 0.2); color: #f87171; }
+    .badge-warning { background-color: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+    .badge-info { background-color: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 0.35rem;
+    }
+
+    .form-control {
+      width: 100%;
+      background-color: #0f172a;
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 0.5rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.875rem;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .flex-gap {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-backdrop.show {
+      display: flex;
+    }
+
+    .modal {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      width: 100%;
+      max-width: 500px;
+      padding: 1.5rem;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      padding: 0.75rem 1.25rem;
+      border-radius: 6px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      display: none;
+      z-index: 1100;
+    }
+
+    .toast.show {
+      display: block;
+    }
+
+    code {
+      font-family: monospace;
+      background-color: rgba(0, 0, 0, 0.3);
+      padding: 0.1rem 0.3rem;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <span>⚡ PayDeck Cloud Admin</span>
+      <span class="brand-badge" id="cloudTierBadge">Managed SaaS</span>
+    </div>
+    <div class="token-bar">
+      <div id="cloudUsageBar" style="display: flex; align-items: center; gap: 0.75rem; background: rgba(16, 185, 129, 0.1); padding: 0.35rem 0.85rem; border-radius: 6px; border: 1px solid rgba(16, 185, 129, 0.3);">
+        <span style="font-size: 0.8rem; color: #34d399; font-weight: 600;">Monthly Usage:</span>
+        <span id="cloudUsageText" style="font-size: 0.8rem; color: #f8fafc; font-weight: 700;">0 / 100 orders</span>
+        <button class="btn btn-sm btn-primary" onclick="showCloudUpgradeModal()" style="font-size: 0.75rem; padding: 0.2rem 0.5rem; background: #10b981; border: none;">Upgrade Plan</button>
+      </div>
+      <label for="adminTokenInput" style="font-size: 0.85rem; color: var(--text-muted);">Admin Secret:</label>
+      <input type="password" id="adminTokenInput" placeholder="BILLING_ADMIN_TOKEN" value="secret">
+      <button class="btn btn-sm" onclick="saveToken()">Set Token</button>
+    </div>
+  </header>
+
+  <nav class="nav-tabs">
+    <button class="tab-btn active" onclick="switchTab('products')">Products & Plans</button>
+    <button class="tab-btn" onclick="switchTab('keys')">API Keys</button>
+    <button class="tab-btn" onclick="switchTab('customers')">Customers & Subscriptions</button>
+    <button class="tab-btn" onclick="switchTab('payments')">Payments & Refunds</button>
+    <button class="tab-btn" onclick="switchTab('audit')">Audit Logs</button>
+    <button class="tab-btn" onclick="switchTab('webhooks')">Webhook Deliveries</button>
+  </nav>
+
+  <main>
+    <!-- TAB 1: PRODUCTS & PLANS -->
+    <div id="tab-products" class="tab-content active">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Products</h2>
+            <button class="btn btn-sm" onclick="openModal('createProductModal')">+ New Product</button>
+          </div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Slug</th>
+                  <th>Name</th>
+                  <th>Rate Limit</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="productsTableBody">
+                <tr><td colspan="5" style="text-align:center; color: var(--text-muted);">Loading products...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Plans</h2>
+            <div class="flex-gap">
+              <select id="planProductSelect" class="form-control" style="width: auto;" onchange="loadPlans()"></select>
+              <button class="btn btn-sm" onclick="openModal('createPlanModal')">+ New Plan</button>
+            </div>
+          </div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Slug</th>
+                  <th>Name</th>
+                  <th>Price</th>
+                  <th>Interval</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="plansTableBody">
+                <tr><td colspan="6" style="text-align:center; color: var(--text-muted);">Select a product to view plans</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: API KEYS -->
+    <div id="tab-keys" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">API Keys</h2>
+          <div class="flex-gap">
+            <select id="keyProductSelect" class="form-control" style="width: auto;" onchange="loadApiKeys()"></select>
+            <button class="btn btn-sm" onclick="openModal('mintKeyModal')">+ Mint Key</button>
+          </div>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Prefix</th>
+                <th>Env</th>
+                <th>Status</th>
+                <th>Created At</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="keysTableBody">
+              <tr><td colspan="7" style="text-align:center; color: var(--text-muted);">Loading keys...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: CUSTOMERS & SUBSCRIPTIONS -->
+    <div id="tab-customers" class="tab-content">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Customers</h2>
+            <button class="btn btn-sm" onclick="openModal('createCustomerModal')">+ New Customer</button>
+          </div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Product</th>
+                  <th>Email</th>
+                  <th>Name</th>
+                  <th>Ext User ID</th>
+                  <th>Created</th>
+                </tr>
+              </thead>
+              <tbody id="customersTableBody">
+                <tr><td colspan="6" style="text-align:center; color: var(--text-muted);">Loading customers...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Subscriptions</h2>
+            <button class="btn btn-sm" onclick="openModal('createSubModal')">+ New Subscription</button>
+          </div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Customer ID</th>
+                  <th>Plan ID</th>
+                  <th>Status</th>
+                  <th>Period End</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="subscriptionsTableBody">
+                <tr><td colspan="6" style="text-align:center; color: var(--text-muted);">Loading subscriptions...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: PAYMENTS & REFUNDS -->
+    <div id="tab-payments" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Payment History</h2>
+          <div class="flex-gap">
+            <select id="paymentStatusFilter" class="form-control" style="width: auto;" onchange="loadPayments()">
+              <option value="">All Statuses</option>
+              <option value="paid">Paid</option>
+              <option value="created">Created</option>
+              <option value="failed">Failed</option>
+              <option value="refunded">Refunded</option>
+            </select>
+            <button class="btn btn-sm btn-secondary" onclick="loadPayments()">Refresh</button>
+          </div>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Payment ID</th>
+                <th>Product</th>
+                <th>Plan</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Razorpay Order</th>
+                <th>Date</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="paymentsTableBody">
+              <tr><td colspan="8" style="text-align:center; color: var(--text-muted);">Loading payments...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 5: AUDIT LOGS -->
+    <div id="tab-audit" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Immutable Audit History</h2>
+          <div class="flex-gap">
+            <input type="text" id="auditActionFilter" class="form-control" placeholder="Filter by action (e.g. key.minted)" style="width: 220px;" oninput="loadAuditLogs()">
+            <button class="btn btn-sm btn-secondary" onclick="loadAuditLogs()">Filter</button>
+          </div>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Log ID</th>
+                <th>Product ID</th>
+                <th>Actor</th>
+                <th>Action</th>
+                <th>Target ID</th>
+                <th>Details</th>
+                <th>Timestamp</th>
+              </tr>
+            </thead>
+            <tbody id="auditTableBody">
+              <tr><td colspan="7" style="text-align:center; color: var(--text-muted);">Loading audit logs...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 6: WEBHOOK DELIVERIES -->
+    <div id="tab-webhooks" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Webhook Queue & Delivery Status</h2>
+          <div class="flex-gap">
+            <select id="webhookStatusFilter" class="form-control" style="width: auto;" onchange="loadWebhooks()">
+              <option value="">All Statuses</option>
+              <option value="pending">Pending</option>
+              <option value="delivered">Delivered</option>
+              <option value="failed">Failed</option>
+            </select>
+            <button class="btn btn-sm btn-secondary" onclick="loadWebhooks()">Refresh Queue</button>
+          </div>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Delivery ID</th>
+                <th>Product ID</th>
+                <th>Event</th>
+                <th>URL</th>
+                <th>Status</th>
+                <th>Attempts</th>
+                <th>Next Retry</th>
+                <th>Last Error</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="webhooksTableBody">
+              <tr><td colspan="9" style="text-align:center; color: var(--text-muted);">Loading webhook queue...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- MODALS -->
+
+  <!-- Modal: Create Product -->
+  <div id="createProductModal" class="modal-backdrop">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Create Product</h3>
+        <button class="btn btn-sm btn-secondary" onclick="closeModal('createProductModal')">✕</button>
+      </div>
+      <form onsubmit="handleCreateProduct(event)">
+        <div class="form-group">
+          <label>Slug (lowercase, unique)</label>
+          <input type="text" id="prodSlugInput" class="form-control" required placeholder="e.g. acme-api">
+        </div>
+        <div class="form-group">
+          <label>Product Name</label>
+          <input type="text" id="prodNameInput" class="form-control" required placeholder="e.g. Acme API Platform">
+        </div>
+        <div class="form-group">
+          <label>Rate Limit per Hour</label>
+          <input type="number" id="prodLimitInput" class="form-control" value="200">
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1.5rem;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('createProductModal')">Cancel</button>
+          <button type="submit" class="btn">Create</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Create Plan -->
+  <div id="createPlanModal" class="modal-backdrop">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Create Plan</h3>
+        <button class="btn btn-sm btn-secondary" onclick="closeModal('createPlanModal')">✕</button>
+      </div>
+      <form onsubmit="handleCreatePlan(event)">
+        <div class="form-group">
+          <label>Product Slug</label>
+          <input type="text" id="planProdSlug" class="form-control" readonly>
+        </div>
+        <div class="form-group">
+          <label>Plan Slug</label>
+          <input type="text" id="planSlugInput" class="form-control" required placeholder="e.g. pro-monthly">
+        </div>
+        <div class="form-group">
+          <label>Plan Name</label>
+          <input type="text" id="planNameInput" class="form-control" required placeholder="e.g. Pro Monthly">
+        </div>
+        <div class="form-group">
+          <label>Amount (in Paise, e.g. 49900 = ₹499.00)</label>
+          <input type="number" id="planAmountInput" class="form-control" required value="49900">
+        </div>
+        <div class="form-group">
+          <label>Currency</label>
+          <input type="text" id="planCurrencyInput" class="form-control" value="INR">
+        </div>
+        <div class="form-group">
+          <label>Billing Interval</label>
+          <select id="planIntervalInput" class="form-control">
+            <option value="month">Month</option>
+            <option value="year">Year</option>
+            <option value="one_time">One Time</option>
+          </select>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1.5rem;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('createPlanModal')">Cancel</button>
+          <button type="submit" class="btn">Create Plan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Mint API Key -->
+  <div id="mintKeyModal" class="modal-backdrop">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Mint API Key</h3>
+        <button class="btn btn-sm btn-secondary" onclick="closeModal('mintKeyModal')">✕</button>
+      </div>
+      <form onsubmit="handleMintKey(event)">
+        <div class="form-group">
+          <label>Product Slug</label>
+          <input type="text" id="keyProdSlug" class="form-control" readonly>
+        </div>
+        <div class="form-group">
+          <label>Key Name / Description</label>
+          <input type="text" id="keyNameInput" class="form-control" placeholder="e.g. Backend Production Key">
+        </div>
+        <div class="form-group">
+          <label>Environment</label>
+          <select id="keyEnvInput" class="form-control">
+            <option value="live">Live</option>
+            <option value="test">Test</option>
+          </select>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1.5rem;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('mintKeyModal')">Cancel</button>
+          <button type="submit" class="btn">Mint Key</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Create Customer -->
+  <div id="createCustomerModal" class="modal-backdrop">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Create Customer</h3>
+        <button class="btn btn-sm btn-secondary" onclick="closeModal('createCustomerModal')">✕</button>
+      </div>
+      <form onsubmit="handleCreateCustomer(event)">
+        <div class="form-group">
+          <label>Product ID</label>
+          <input type="text" id="custProdId" class="form-control" required placeholder="prod_xxx">
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="custEmail" class="form-control" placeholder="user@example.com">
+        </div>
+        <div class="form-group">
+          <label>Name</label>
+          <input type="text" id="custName" class="form-control" placeholder="Jane Doe">
+        </div>
+        <div class="form-group">
+          <label>External User ID</label>
+          <input type="text" id="custExtId" class="form-control" placeholder="user_12345">
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1.5rem;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('createCustomerModal')">Cancel</button>
+          <button type="submit" class="btn">Create Customer</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Create Subscription -->
+  <div id="createSubModal" class="modal-backdrop">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Create Subscription</h3>
+        <button class="btn btn-sm btn-secondary" onclick="closeModal('createSubModal')">✕</button>
+      </div>
+      <form onsubmit="handleCreateSub(event)">
+        <div class="form-group">
+          <label>Product ID</label>
+          <input type="text" id="subProdId" class="form-control" required placeholder="prod_xxx">
+        </div>
+        <div class="form-group">
+          <label>Customer ID</label>
+          <input type="text" id="subCustId" class="form-control" required placeholder="cust_xxx">
+        </div>
+        <div class="form-group">
+          <label>Plan ID</label>
+          <input type="text" id="subPlanId" class="form-control" required placeholder="plan_xxx">
+        </div>
+        <div class="form-group">
+          <label>Period Days</label>
+          <input type="number" id="subPeriodDays" class="form-control" value="30">
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1.5rem;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('createSubModal')">Cancel</button>
+          <button type="submit" class="btn">Create Subscription</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Refund Payment -->
+  <div id="refundModal" class="modal-backdrop">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Refund Payment</h3>
+        <button class="btn btn-sm btn-secondary" onclick="closeModal('refundModal')">✕</button>
+      </div>
+      <form onsubmit="handleRefundPayment(event)">
+        <input type="hidden" id="refundPaymentId">
+        <div class="form-group">
+          <label>Amount (in Paise, optional for partial refund)</label>
+          <input type="number" id="refundAmountInput" class="form-control" placeholder="Leave empty for full refund">
+        </div>
+        <div class="form-group">
+          <label>Reason</label>
+          <input type="text" id="refundReasonInput" class="form-control" placeholder="Requested by customer">
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1.5rem;">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('refundModal')">Cancel</button>
+          <button type="submit" class="btn btn-danger">Execute Refund</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    let productsList = [];
+
+    function getAdminToken() {
+      return localStorage.getItem('paydeck_admin_token') || document.getElementById('adminTokenInput').value || 'secret';
+    }
+
+    function saveToken() {
+      const val = document.getElementById('adminTokenInput').value;
+      localStorage.setItem('paydeck_admin_token', val);
+      showToast('Admin Token saved');
+      loadProducts();
+    }
+
+    function showToast(msg, isError = false) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.style.borderColor = isError ? 'var(--danger)' : 'var(--success)';
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3500);
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      
+      event.target.classList.add('active');
+      document.getElementById('tab-' + tabId).classList.add('active');
+
+      if (tabId === 'products') loadProducts();
+      if (tabId === 'keys') loadApiKeys();
+      if (tabId === 'customers') { loadCustomers(); loadSubscriptions(); }
+      if (tabId === 'payments') loadPayments();
+      if (tabId === 'audit') loadAuditLogs();
+      if (tabId === 'webhooks') loadWebhooks();
+    }
+
+    function openModal(id) {
+      document.getElementById(id).classList.add('show');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('show');
+    }
+
+    async function apiFetch(endpoint, options = {}) {
+      const token = getAdminToken();
+      options.headers = options.headers || {};
+      options.headers['X-Admin-Token'] = token;
+      if (options.body && typeof options.body === 'object') {
+        options.headers['Content-Type'] = 'application/json';
+        options.body = JSON.stringify(options.body);
+      }
+
+      const res = await fetch(endpoint, options);
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(json.error || json.message || 'API Request Failed (' + res.status + ')');
+      }
+      return json;
+    }
+
+    // PRODUCTS & PLANS
+    async function loadProducts() {
+      try {
+        const data = await apiFetch('/v1/admin/products');
+        productsList = data.products || [];
+        const tbody = document.getElementById('productsTableBody');
+        tbody.innerHTML = '';
+
+        const sel1 = document.getElementById('planProductSelect');
+        const sel2 = document.getElementById('keyProductSelect');
+        sel1.innerHTML = '';
+        sel2.innerHTML = '';
+
+        if (productsList.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No products created yet</td></tr>';
+          return;
+        }
+
+        productsList.forEach(p => {
+          const opt1 = document.createElement('option');
+          opt1.value = p.slug; opt1.textContent = `${p.name} (${p.slug})`;
+          sel1.appendChild(opt1);
+
+          const opt2 = document.createElement('option');
+          opt2.value = p.slug; opt2.textContent = `${p.name} (${p.slug})`;
+          sel2.appendChild(opt2);
+
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td><code>${p.slug}</code></td>
+            <td><strong>${p.name}</strong></td>
+            <td>${p.rate_limit_per_hour}/hr</td>
+            <td><span class="badge ${p.active ? 'badge-success' : 'badge-danger'}">${p.active ? 'Active' : 'Inactive'}</span></td>
+            <td><code>${p.id}</code></td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        if (productsList.length > 0) {
+          document.getElementById('planProdSlug').value = productsList[0].slug;
+          document.getElementById('keyProdSlug').value = productsList[0].slug;
+          loadPlans();
+        }
+      } catch (err) {
+        showToast(err.message, true);
+      }
+    }
+
+    async function handleCreateProduct(e) {
+      e.preventDefault();
+      try {
+        const slug = document.getElementById('prodSlugInput').value;
+        const name = document.getElementById('prodNameInput').value;
+        const limit = Number(document.getElementById('prodLimitInput').value);
+
+        await apiFetch('/v1/admin/products', {
+          method: 'POST',
+          body: { slug, name, rate_limit_per_hour: limit }
+        });
+
+        showToast('Product created successfully');
+        closeModal('createProductModal');
+        loadProducts();
+      } catch (err) {
+        showToast(err.message, true);
+      }
+    }
+
+    async function loadPlans() {
+      const slug = document.getElementById('planProductSelect').value;
+      if (!slug) return;
+      document.getElementById('planProdSlug').value = slug;
+
+      try {
+        const data = await apiFetch(`/v1/admin/products/${slug}/plans`);
+        const tbody = document.getElementById('plansTableBody');
+        tbody.innerHTML = '';
+
+        if (!data.plans || data.plans.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No plans found for product</td></tr>';
+          return;
+        }
+
+        data.plans.forEach(plan => {
+          const amountFormatted = (plan.amount_paise / 100).toFixed(2);
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td><code>${plan.slug}</code></td>
+            <td>${plan.name}</td>
+            <td>₹${amountFormatted} ${plan.currency}</td>
+            <td>${plan.interval}</td>
+            <td><span class="badge ${plan.active ? 'badge-success' : 'badge-danger'}">${plan.active ? 'Active' : 'Inactive'}</span></td>
+            <td>
+              <button class="btn btn-sm btn-secondary" onclick="togglePlanActive('${slug}', '${plan.slug}', ${!plan.active})">
+                ${plan.active ? 'Deactivate' : 'Activate'}
+              </button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        showToast(err.message, true);
+      }
+    }
+
+    async function handleCreatePlan(e) {
+      e.preventDefault();
+      try {
+        const slug = document.getElementById('planProdSlug').value;
+        const planSlug = document.getElementById('planSlugInput').value;
+        const name = document.getElementById('planNameInput').value;
+        const amount_paise = Number(document.getElementById('planAmountInput').value);
+        const currency = document.getElementById('planCurrencyInput').value;
+        const interval = document.getElementById('planIntervalInput').value;
+
+        await apiFetch(`/v1/admin/products/${slug}/plans`, {
+          method: 'POST',
+          body: { slug: planSlug, name, amount_paise, currency, interval }
+        });
+
+        showToast('Plan created successfully');
+        closeModal('createPlanModal');
+        loadPlans();
+      } catch (err) {
+        showToast(err.message, true);
+      }
+    }
+
+    async function togglePlanActive(prodSlug, planSlug, newActiveState) {
+      try {
+        await apiFetch(`/v1/admin/products/${prodSlug}/plans/${planSlug}`, {
+          method: 'PATCH',
+          body: { active: newActiveState }
+        });
+        showToast('Plan status updated');
+        loadPlans();
+      } catch (err) {
+        showToast(err.message, true);
+      }
+    }
+
+    // API KEYS
+    async function loadApiKeys() {
+      const slug = document.getElementById('keyProductSelect').value;
+      if (!slug) return;
+      document.getElementById('keyProdSlug').value = slug;
+
+      try {
+        const data = await apiFetch(`/v1/admin/products/${slug}/keys`);
+        const tbody = document.getElementById('keysTableBody');
+        tbody.innerHTML = '';
+
+        if (!data.keys || data.keys.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No API keys minted yet</td></tr>';
+          return;
+        }
+
+        data.keys.forEach(k => {
+          const isRevoked = Boolean(k.revoked_at);
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td><code>${k.id}</code></td>
+            <td>${k.name}</td>
+            <td><code>${k.key_prefix}...</code></td>
+            <td><span class="badge ${k.environment === 'live' ? 'badge-warning' : 'badge-info'}">${k.environment}</span></td>
+            <td><span class="badge ${isRevoked ? 'badge-danger' : 'badge-success'}">${isRevoked ? 'Revoked' : 'Active'}</span></td>
+            <td>${new Date(k.created_at).toLocaleString()}</td>
+            <td>
+              ${!isRevoked ? `<button class="btn btn-sm btn-danger" onclick="revokeKey('${slug}', '${k.id}')">Revoke</button>` : '—'}
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        showToast(err.message, true);
+      }
+    }
+
+    async function handleMintKey(e) {
+      e.preventDefault();
+      try {
+        const slug = document.getElementById('keyProdSlug').value;
+        const name = document.getElementById('keyNameInput').value;
+        const environment = document.getElementById('keyEnvInput').value;
+
+        const data = await apiFetch(`/v1/admin/products/${slug}/keys`, {
+          method: 'POST',
+          body: { name, environment }
+        });
+
+        alert(`NEW API KEY GENERATED:\n\n${data.key}\n\nWarning: Store this key securely now. It will not be shown again.`);
+        closeModal('mintKeyModal');
+        loadApiKeys();
+      } catch (err) {
+        showToast(err.message, true);
+      }
+    }
+
+    async function revokeKey(slug, keyId) {
+      if (!confirm('Are you sure you want to revoke this API key?')) return;
+      try {
+        await apiFetch(`/v1/admin/products/${slug}/keys/${keyId}/revoke`, { method: 'POST' });
+        showToast('API key revoked');
+        loadApiKeys();
+      } catch (err) {
+        showToast(err.message, true);
+      }
+    }
+
+    // CUSTOMERS & SUBSCRIPTIONS
+    async function loadCustomers() {
+      try {
+        const data = await apiFetch('/v1/admin/customers');
+        const tbody = document.getElementById('customersTableBody');
+        tbody.innerHTML = '';
+
+        if (!data.customers || data.customers.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No customers found</td></tr>';
+          return;
+        }
+
+        data.customers.forEach(c => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td><code>${c.id}</code></td>
+            <td><code>${c.product_id}</code></td>
+            <td>${c.email || '—'}</td>
+            <td>${c.name || '—'}</td>
+            <td>${c.external_user_id || '—'}</td>
+            <td>${new Date(c.created_at).toLocaleDateString()}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        showToast(err.message, true);
+      }
+    }
+
+    async function handleCreateCustomer(e) {
+      e.preventDefault();
+      try {
+        const product_id = document.getElementById('custProdId').value;
+        const email = document.getElementById('custEmail').value;
+        const name = document.getElementById('custName').value;
+        const external_user_id = document.getElementById('custExtId').value;
+
+        await apiFetch('/v1/admin/customers', {
+          method: 'POST',
+          body: { product_id, email, name, external_user_id }
+        });
+
+        showToast('Customer created');
+        closeModal('createCustomerModal');
+        loadCustomers();
+      } catch (err) {
+        showToast(err.message, true);
+      }
+    }
+
+    async function loadSubscriptions() {
+      try {
+        const data = await apiFetch('/v1/admin/subscriptions');
+        const tbody = document.getElementById('subscriptionsTableBody');
+        tbody.innerHTML = '';
+
+        if (!data.subscriptions || data.subscriptions.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No active subscriptions</td></tr>';
+          return;
+        }
+
+        data.subscriptions.forEach(s => {
+          const isCanceled = s.status === 'canceled';
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td><code>${s.id}</code></td>
+            <td><code>${s.customer_id}</code></td>
+            <td><code>${s.plan_id}</code></td>
+            <td><span class="badge ${isCanceled ? 'badge-danger' : 'badge-success'}">${s.status}</span></td>
+            <td>${new Date(s.current_period_end).toLocaleDateString()}</td>
+            <td>
+              ${!isCanceled ? `<button class="btn btn-sm btn-danger" onclick="cancelSub('${s.id}')">Cancel</button>` : '—'}
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        showToast(err.message, true);
+      }
+    }
+
+    async function handleCreateSub(e) {
+      e.preventDefault();
+      try {
+        const product_id = document.getElementById('subProdId').value;
+        const customer_id = document.getElementById('subCustId').value;
+        const plan_id = document.getElementById('subPlanId').value;
+        const period_days = Number(document.getElementById('subPeriodDays').value);
+
+        await apiFetch('/v1/admin/subscriptions', {
+          method: 'POST',
+          body: { product_id, customer_id, plan_id, period_days }
+        });
+
+        showToast('Subscription created');
+        closeModal('createSubModal');
+        loadSubscriptions();
+      } catch (err) {
+        showToast(err.message, true);
+      }
+    }
+
+    async function cancelSub(id) {
+      if (!confirm('Cancel this subscription?')) return;
+      try {
+        await apiFetch(`/v1/admin/subscriptions/${id}/cancel`, { method: 'POST' });
+        showToast('Subscription canceled');
+        loadSubscriptions();
+      } catch (err) {
+        showToast(err.message, true);
+      }
+    }
+
+    // PAYMENTS & REFUNDS
+    async function loadPayments() {
+      try {
+        const status = document.getElementById('paymentStatusFilter').value;
+        const endpoint = status ? `/v1/admin/payments?status=${encodeURIComponent(status)}` : '/v1/admin/payments';
+        const data = await apiFetch(endpoint);
+
+        const tbody = document.getElementById('paymentsTableBody');
+        tbody.innerHTML = '';
+
+        if (!data.payments || data.payments.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">No payment records found</td></tr>';
+          return;
+        }
+
+        data.payments.forEach(p => {
+          const amt = (p.amount_paise / 100).toFixed(2);
+          const isPaid = p.status === 'paid';
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td><code>${p.id}</code></td>
+            <td><code>${p.product_id}</code></td>
+            <td>${p.plan_slug || 'adhoc'}</td>
+            <td>₹${amt} ${p.currency}</td>
+            <td><span class="badge ${isPaid ? 'badge-success' : p.status === 'refunded' ? 'badge-warning' : 'badge-info'}">${p.status}</span></td>
+            <td><code>${p.razorpay_order_id || '—'}</code></td>
+            <td>${new Date(p.created_at).toLocaleString()}</td>
+            <td>
+              ${isPaid ? `<button class="btn btn-sm btn-danger" onclick="openRefundModal('${p.id}')">Refund</button>` : '—'}
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        showToast(err.message, true);
+      }
+    }
+
+    function openRefundModal(paymentId) {
+      document.getElementById('refundPaymentId').value = paymentId;
+      openModal('refundModal');
+    }
+
+    async function handleRefundPayment(e) {
+      e.preventDefault();
+      try {
+        const paymentId = document.getElementById('refundPaymentId').value;
+        const amount_paise = document.getElementById('refundAmountInput').value ? Number(document.getElementById('refundAmountInput').value) : undefined;
+        const reason = document.getElementById('refundReasonInput').value;
+
+        await apiFetch(`/v1/admin/payments/${paymentId}/refund`, {
+          method: 'POST',
+          body: { amount_paise, reason }
+        });
+
+        showToast('Refund executed successfully');
+        closeModal('refundModal');
+        loadPayments();
+      } catch (err) {
+        showToast(err.message, true);
+      }
+    }
+
+    // AUDIT LOGS
+    async function loadAuditLogs() {
+      try {
+        const action = document.getElementById('auditActionFilter').value;
+        const endpoint = action ? `/v1/admin/audit-logs?action=${encodeURIComponent(action)}` : '/v1/admin/audit-logs';
+        const data = await apiFetch(endpoint);
+
+        const tbody = document.getElementById('auditTableBody');
+        tbody.innerHTML = '';
+
+        if (!data.audit_logs || data.audit_logs.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No audit logs found</td></tr>';
+          return;
+        }
+
+        data.audit_logs.forEach(log => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td><code>${log.id}</code></td>
+            <td><code>${log.product_id || '—'}</code></td>
+            <td>${log.actor}</td>
+            <td><span class="badge badge-info">${log.action}</span></td>
+            <td><code>${log.target_id || '—'}</code></td>
+            <td><small>${JSON.stringify(log.details || {})}</small></td>
+            <td>${new Date(log.created_at).toLocaleString()}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        showToast(err.message, true);
+      }
+    }
+
+    // WEBHOOK DELIVERIES
+    async function loadWebhooks() {
+      try {
+        const status = document.getElementById('webhookStatusFilter').value;
+        const endpoint = status ? `/v1/admin/webhooks?status=${encodeURIComponent(status)}` : '/v1/admin/webhooks';
+        const data = await apiFetch(endpoint);
+
+        const tbody = document.getElementById('webhooksTableBody');
+        tbody.innerHTML = '';
+
+        if (!data.deliveries || data.deliveries.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;">No webhook deliveries in queue</td></tr>';
+          return;
+        }
+
+        data.deliveries.forEach(w => {
+          const isDelivered = w.status === 'delivered';
+          const isFailed = w.status === 'failed';
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td><code>${w.id}</code></td>
+            <td><code>${w.product_id}</code></td>
+            <td><span class="badge badge-info">${w.event}</span></td>
+            <td><small>${w.url}</small></td>
+            <td><span class="badge ${isDelivered ? 'badge-success' : isFailed ? 'badge-danger' : 'badge-warning'}">${w.status}</span></td>
+            <td>${w.attempts}</td>
+            <td>${w.next_retry_at ? new Date(w.next_retry_at).toLocaleTimeString() : '—'}</td>
+            <td><small style="color:var(--danger);">${w.last_error || '—'}</small></td>
+            <td>
+              <button class="btn btn-sm btn-secondary" onclick="redeliverWebhook('${w.id}')">Redeliver</button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        showToast(err.message, true);
+      }
+    }
+
+    async function redeliverWebhook(id) {
+      try {
+        const data = await apiFetch(`/v1/admin/webhooks/${id}/redeliver`, { method: 'POST' });
+        if (data.ok) {
+          showToast('Webhook redelivered successfully');
+        } else {
+          showToast('Redelivery failed', true);
+        }
+        loadWebhooks();
+      } catch (err) {
+        showToast(err.message, true);
+      }
+    }
+
+    async function fetchCloudUsage() {
+      try {
+        const res = await apiFetch('/v1/cloud/me');
+        if (res && res.organization) {
+          const tier = res.organization.tier.toUpperCase();
+          const used = res.usage ? res.usage.order_count : 0;
+          const limit = res.tier_limits ? (res.tier_limits.orders_per_month === 999999999 ? '∞' : res.tier_limits.orders_per_month) : 100;
+          document.getElementById('cloudTierBadge').innerText = `${tier} TIER`;
+          document.getElementById('cloudUsageText').innerText = `${used} / ${limit} orders`;
+        }
+      } catch {}
+    }
+
+    function showCloudUpgradeModal() {
+      const tier = prompt("Select PayDeck Cloud Subscription Tier to upgrade:\n\n1. starter ($19/mo - 5,000 orders/mo)\n2. pro ($49/mo - 50,000 orders/mo)\n3. business ($149/mo - Unlimited)\n\nEnter tier name (starter, pro, business):", "pro");
+      if (tier && ['starter', 'pro', 'business', 'free'].includes(tier.toLowerCase())) {
+        apiFetch('/v1/cloud/org/upgrade', {
+          method: 'POST',
+          body: JSON.stringify({ tier: tier.toLowerCase() })
+        }).then(res => {
+          showToast(`Upgraded organization to ${tier.toUpperCase()} tier!`);
+          fetchCloudUsage();
+        }).catch(err => showToast(err.message, true));
+      }
+    }
+
+    // Initialize Dashboard
+    document.addEventListener('DOMContentLoaded', () => {
+      const savedToken = localStorage.getItem('paydeck_admin_token');
+      if (savedToken) {
+        document.getElementById('adminTokenInput').value = savedToken;
+      }
+      fetchCloudUsage();
+      loadProducts();
+    });
+  </script>
+</body>
+</html>

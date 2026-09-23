@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /v1/admin/
+Disallow: /admin/
+
+Sitemap: https://paydeck.dev/sitemap.xml

@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    
+    <!-- Primary SEO Meta Tags -->
+    <title>PayDeck — Open-Source Secret-Isolated Billing Spine for SaaS</title>
+    <meta name="title" content="PayDeck — Open-Source Secret-Isolated Billing Spine for SaaS" />
+    <meta name="description" content="Self-hostable, secret-isolated billing microservice proxy for SaaS. Deploy on Node.js, Bun, Docker, or Cloudflare Workers with SQLite, D1, or Postgres." />
+    <meta name="keywords" content="billing microservice, razorpay proxy, stripe proxy, open source billing, saas billing spine, cloudflare d1 billing, sqlite billing, subscription engine, webhook queue" />
+    <meta name="author" content="PiSigma / PayDeck Team" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://paydeck.dev/" />
+    <meta name="theme-color" content="#030712" />
+
+    <!-- Open Graph / Facebook / LinkedIn / Discord -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://paydeck.dev/" />
+    <meta property="og:site_name" content="PayDeck" />
+    <meta property="og:title" content="PayDeck — Open-Source Secret-Isolated Billing Spine" />
+    <meta property="og:description" content="Self-hostable, secret-isolated payment proxy and subscription billing microservice with multi-language SDKs (TypeScript, Python, Go)." />
+    <meta property="og:image" content="https://paydeck.dev/og-image.png" />
+
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://paydeck.dev/" />
+    <meta name="twitter:title" content="PayDeck — Open-Source Secret-Isolated Billing Spine" />
+    <meta name="twitter:description" content="Self-hostable, secret-isolated payment proxy and subscription billing microservice with multi-language SDKs (TypeScript, Python, Go)." />
+    <meta name="twitter:image" content="https://paydeck.dev/og-image.png" />
+
+    <!-- Structured Data (JSON-LD Rich Snippets) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "PayDeck",
+        "operatingSystem": "Linux, macOS, Windows, Docker, Cloudflare Workers",
+        "applicationCategory": "DeveloperApplication",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "description": "Open-source, secret-isolated billing microservice proxy for SaaS applications.",
+        "url": "https://paydeck.dev/",
+        "license": "https://opensource.org/licenses/MIT",
+        "softwareRequirements": "Node.js, Bun, Docker, or Cloudflare Workers"
+      }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #030712;
+        --surface: rgba(15, 23, 42, 0.75);
+        --surface-border: rgba(16, 185, 129, 0.18);
+        --surface-hover: rgba(30, 41, 59, 0.85);
+        --primary: #10b981;
+        --primary-glow: rgba(16, 185, 129, 0.4);
+        --cyan: #06b6d4;
+        --violet: #8b5cf6;
+        --rose: #f43f5e;
+        --text: #f8fafc;
+        --muted: #94a3b8;
+        --code-bg: #0b0f19;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+        background-color: var(--bg);
+        color: var(--text);
+        line-height: 1.6;
+        overflow-x: hidden;
+      }
+
+      /* Animated Deep Space Emerald-Violet background mesh */
+      .bg-glow {
+        position: fixed;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100vw;
+        height: 100vh;
+        z-index: -1;
+        pointer-events: none;
+        background:
+          radial-gradient(circle at 15% 20%, rgba(16, 185, 129, 0.22), transparent 45%),
+          radial-gradient(circle at 85% 25%, rgba(139, 92, 246, 0.2), transparent 45%),
+          radial-gradient(circle at 50% 85%, rgba(6, 182, 212, 0.15), transparent 50%);
+      }
+
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        max-width: 1240px;
+        margin: 0 auto;
+        padding: 1.5rem 1.5rem;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-weight: 800;
+        font-size: 1.4rem;
+        letter-spacing: -0.02em;
+        text-decoration: none;
+        color: var(--text);
+      }
+
+      .logo-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, var(--primary), var(--violet));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 0 22px var(--primary-glow);
+        font-weight: 900;
+        font-size: 1.25rem;
+        color: #fff;
+      }
+
+      nav {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+      }
+
+      nav a {
+        color: var(--muted);
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.95rem;
+        transition: color 0.2s;
+      }
+
+      nav a:hover {
+        color: var(--primary);
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.7rem 1.4rem;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        text-decoration: none;
+        transition: all 0.2s;
+        cursor: pointer;
+        border: none;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, var(--primary), var(--cyan));
+        color: #030712;
+        box-shadow: 0 4px 18px var(--primary-glow);
+        font-weight: 700;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 24px rgba(16, 185, 129, 0.6);
+      }
+
+      .btn-secondary {
+        background: var(--surface);
+        color: var(--text);
+        border: 1px solid var(--surface-border);
+        backdrop-filter: blur(12px);
+      }
+
+      .btn-secondary:hover {
+        background: var(--surface-hover);
+        border-color: rgba(16, 185, 129, 0.4);
+      }
+
+      .hero {
+        max-width: 1240px;
+        margin: 4rem auto 3rem;
+        padding: 0 1.5rem;
+        text-align: center;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.4rem 1.1rem;
+        border-radius: 999px;
+        background: rgba(16, 185, 129, 0.12);
+        border: 1px solid rgba(16, 185, 129, 0.35);
+        color: #6ee7b7;
+        font-size: 0.88rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+      }
+
+      .hero h1 {
+        font-size: 3.8rem;
+        font-weight: 800;
+        line-height: 1.12;
+        letter-spacing: -0.03em;
+        margin-bottom: 1.25rem;
+        background: linear-gradient(180deg, #ffffff 40%, #a7f3d0 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .hero p {
+        font-size: 1.25rem;
+        color: var(--muted);
+        max-width: 800px;
+        margin: 0 auto 2.5rem;
+      }
+
+      .hero-actions {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+      }
+
+      /* Interactive Live API Simulator */
+      .simulator-section {
+        max-width: 1100px;
+        margin: 4rem auto;
+        padding: 0 1.5rem;
+      }
+
+      .section-header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+      }
+
+      .section-header h2 {
+        font-size: 2.4rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        margin-bottom: 0.5rem;
+      }
+
+      .section-header p {
+        color: var(--muted);
+        font-size: 1.05rem;
+      }
+
+      .simulator-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        background: var(--surface);
+        border: 1px solid var(--surface-border);
+        border-radius: 20px;
+        padding: 2rem;
+        backdrop-filter: blur(16px);
+      }
+
+      .sim-controls label {
+        display: block;
+        font-weight: 600;
+        font-size: 0.88rem;
+        color: #cbd5e1;
+        margin: 1rem 0 0.4rem;
+      }
+
+      .sim-controls input, .sim-controls select {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        background: rgba(3, 7, 18, 0.85);
+        border: 1px solid var(--surface-border);
+        border-radius: 10px;
+        color: #fff;
+        font-size: 0.95rem;
+        font-family: inherit;
+      }
+
+      .sim-controls input:focus, .sim-controls select:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 12px var(--primary-glow);
+      }
+
+      .sim-response {
+        background: var(--code-bg);
+        border: 1px solid var(--surface-border);
+        border-radius: 12px;
+        padding: 1.25rem;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.88rem;
+        color: #6ee7b7;
+        overflow-x: auto;
+        max-height: 420px;
+      }
+
+      /* Calculator Section */
+      .calc-card {
+        max-width: 900px;
+        margin: 5rem auto;
+        background: linear-gradient(135deg, rgba(6, 78, 59, 0.4), rgba(15, 23, 42, 0.8));
+        border: 1px solid rgba(16, 185, 129, 0.35);
+        border-radius: 20px;
+        padding: 2.5rem;
+        text-align: center;
+        backdrop-filter: blur(16px);
+      }
+
+      .calc-slider {
+        width: 80%;
+        margin: 1.5rem 0;
+        accent-color: var(--primary);
+      }
+
+      .savings-amount {
+        font-size: 3.2rem;
+        font-weight: 800;
+        color: #34d399;
+        margin: 0.5rem 0;
+      }
+
+      /* Comparison Matrix Table */
+      .matrix-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 2rem;
+        background: var(--surface);
+        border-radius: 16px;
+        overflow: hidden;
+        border: 1px solid var(--surface-border);
+      }
+
+      .matrix-table th, .matrix-table td {
+        padding: 1.1rem 1.25rem;
+        text-align: left;
+        border-bottom: 1px solid var(--surface-border);
+      }
+
+      .matrix-table th {
+        background: #0f172a;
+        font-weight: 700;
+        color: #f1f5f9;
+      }
+
+      .check-yes {
+        color: #34d399;
+        font-weight: bold;
+      }
+
+      .check-no {
+        color: var(--rose);
+      }
+
+      /* Code showcase section */
+      .code-container {
+        max-width: 1100px;
+        margin: 4rem auto;
+        padding: 0 1.5rem;
+      }
+
+      .code-window {
+        background: var(--code-bg);
+        border: 1px solid var(--surface-border);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+      }
+
+      .code-tabs {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #0f172a;
+        border-bottom: 1px solid var(--surface-border);
+        padding: 0 1rem;
+      }
+
+      .tab-group {
+        display: flex;
+      }
+
+      .tab-btn {
+        padding: 0.85rem 1.25rem;
+        background: none;
+        border: none;
+        color: var(--muted);
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        transition: all 0.2s;
+      }
+
+      .tab-btn.active {
+        color: #34d399;
+        border-bottom-color: #34d399;
+      }
+
+      .copy-btn {
+        background: var(--surface);
+        border: 1px solid var(--surface-border);
+        color: var(--muted);
+        padding: 0.35rem 0.75rem;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        cursor: pointer;
+      }
+
+      .copy-btn:hover {
+        color: #fff;
+      }
+
+      .code-content {
+        padding: 1.5rem;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.9rem;
+        line-height: 1.6;
+        color: #e2e8f0;
+        overflow-x: auto;
+      }
+
+      .code-block {
+        display: none;
+      }
+
+      .code-block.active {
+        display: block;
+      }
+
+      /* Features grid */
+      .features {
+        max-width: 1200px;
+        margin: 6rem auto;
+        padding: 0 1.5rem;
+      }
+
+      .features-title {
+        text-align: center;
+        font-size: 2.2rem;
+        font-weight: 800;
+        margin-bottom: 3rem;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--surface-border);
+        border-radius: 16px;
+        padding: 2rem;
+        backdrop-filter: blur(12px);
+        transition: all 0.2s;
+      }
+
+      .card:hover {
+        background: var(--surface-hover);
+        border-color: rgba(16, 185, 129, 0.4);
+        transform: translateY(-4px);
+      }
+
+      .card-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        background: rgba(16, 185, 129, 0.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+        margin-bottom: 1.25rem;
+        color: #34d399;
+      }
+
+      .card h3 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+
+      .card p {
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+
+      footer {
+        max-width: 1240px;
+        margin: 6rem auto 2rem;
+        padding: 2rem 1.5rem;
+        border-top: 1px solid var(--surface-border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+
+      footer a {
+        color: var(--muted);
+        text-decoration: none;
+      }
+
+      footer a:hover {
+        color: var(--primary);
+      }
+
+      @media (max-width: 868px) {
+        .hero h1 {
+          font-size: 2.6rem;
+        }
+        .simulator-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="bg-glow"></div>
+
+    <header>
+      <a href="/" class="logo">
+        <div class="logo-icon">P</div>
+        PayDeck
+      </a>
+      <nav>
+        <a href="#simulator">Live Playground</a>
+        <a href="#calculator">Savings Calc</a>
+        <a href="/admin">Web Admin SPA</a>
+        <a href="/health">Health</a>
+        <a href="/v1/openapi.json">OpenAPI Spec</a>
+        <a href="https://github.com/pisigmac/PayDeck.git" target="_blank" class="btn btn-secondary">GitHub</a>
+      </nav>
+    </header>
+
+    <main>
+      <!-- HERO -->
+      <section class="hero">
+        <div class="badge">🛡️ Deep Space Emerald Theme &bull; Secret-Isolated Billing Proxy</div>
+        <h1>Self-Hosted SaaS Billing<br />With Zero Per-Transaction Fees</h1>
+        <p>
+          Isolate gateway secrets, proxy Razorpay & Stripe requests, validate payload inputs with Zod, and dispatch signed downstream webhooks with automatic exponential backoff retries.
+        </p>
+        <div class="hero-actions">
+          <a href="/admin" class="btn btn-primary">Open Web Admin SPA &rarr;</a>
+          <a href="#simulator" class="btn btn-secondary">Try Live API Playground</a>
+        </div>
+      </section>
+
+      <!-- LIVE API SIMULATOR PLAYGROUND -->
+      <section id="simulator" class="simulator-section">
+        <div class="section-header">
+          <h2>Live API Playground & Gateway Simulator</h2>
+          <p>Test real PayDeck billing endpoints directly inside your browser right now.</p>
+        </div>
+
+        <div class="simulator-grid">
+          <div class="sim-controls">
+            <label for="sim-endpoint">Endpoint</label>
+            <select id="sim-endpoint" onchange="updateSimBody()">
+              <option value="health">GET /health (System Diagnostics)</option>
+              <option value="plans">GET /v1/plans (List Active Plans)</option>
+              <option value="orders">POST /v1/orders (Create Payment Order)</option>
+              <option value="customers">GET /v1/customers (List Customer Directory)</option>
+            </select>
+
+            <label for="sim-gateway">Gateway Adapter Mode</label>
+            <select id="sim-gateway">
+              <option value="dev">Dev Mode (Local Fake Offline Charge)</option>
+              <option value="razorpay">Razorpay Gateway Adapter</option>
+              <option value="stripe">Stripe Gateway Adapter</option>
+            </select>
+
+            <label for="sim-currency">Currency Code (ISO-4217)</label>
+            <select id="sim-currency">
+              <option value="USD">USD ($)</option>
+              <option value="EUR">EUR (€)</option>
+              <option value="GBP">GBP (£)</option>
+              <option value="SGD">SGD ($)</option>
+              <option value="INR">INR (₹)</option>
+            </select>
+
+            <label for="sim-amount">Amount (in smallest unit, e.g. 1000 = $10.00)</label>
+            <input type="number" id="sim-amount" value="1500" />
+
+            <div style="margin-top: 1.5rem;">
+              <button class="btn btn-primary" style="width: 100%;" onclick="runSimulatedRequest()">Execute Request &rarr;</button>
+            </div>
+          </div>
+
+          <div>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+              <span style="font-weight: 600; font-size: 0.9rem; color: #94a3b8;">Real Server Response Payload</span>
+              <span id="sim-status" style="font-size: 0.85rem; font-weight: 700; color: #34d399;">200 OK</span>
+            </div>
+            <pre id="sim-output" class="sim-response">Click "Execute Request" to hit live PayDeck server.</pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- CODE SHOWCASE TABS -->
+      <section class="code-container">
+        <div class="code-window">
+          <div class="code-tabs">
+            <div class="tab-group">
+              <button class="tab-btn active" onclick="showTab('ts')">TypeScript / Node</button>
+              <button class="tab-btn" onclick="showTab('python')">Python SDK</button>
+              <button class="tab-btn" onclick="showTab('go')">Go SDK</button>
+              <button class="tab-btn" onclick="showTab('curl')">cURL</button>
+            </div>
+            <button class="copy-btn" onclick="copyActiveCode()">Copy Code</button>
+          </div>
+          <div class="code-content">
+            <div id="ts" class="code-block active">
+              <pre id="code-ts"><span style="color:#34d399">import</span> { PayDeckClient } <span style="color:#34d399">from</span> <span style="color:#a7f3d0">'@paydeck/sdk'</span>
+
+<span style="color:#34d399">const</span> paydeck = <span style="color:#34d399">new</span> <span style="color:#6ee7b7">PayDeckClient</span>({
+  baseUrl: process.env.PAYDECK_BASE_URL || window.location.origin,
+  apiKey: <span style="color:#a7f3d0">'pd_live_1234567890...'</span>,
+  retries: <span style="color:#f59e0b">3</span>,
+})
+
+<span style="color:#7f848e">// 1. Create multi-currency order</span>
+<span style="color:#34d399">const</span> order = <span style="color:#34d399">await</span> paydeck.<span style="color:#38bdf8">createOrder</span>({ plan: <span style="color:#a7f3d0">'pro'</span>, currency: <span style="color:#a7f3d0">'USD'</span>, idempotencyKey: <span style="color:#a7f3d0">'session_100'</span> })
+
+<span style="color:#7f848e">// 2. Verify payment HMAC signature</span>
+<span style="color:#34d399">const</span> verified = <span style="color:#34d399">await</span> paydeck.<span style="color:#38bdf8">verify</span>({ razorpay_order_id: order.order_id, razorpay_payment_id: <span style="color:#a7f3d0">'pay_999'</span>, razorpay_signature: <span style="color:#a7f3d0">'sig_123'</span> })
+
+<span style="color:#7f848e">// 3. Verify downstream webhook HMAC (static method)</span>
+<span style="color:#34d399">const</span> isValid = <span style="color:#34d399">await</span> PayDeckClient.<span style="color:#38bdf8">verifyWebhookSignature</span>(rawBody, signatureHeader, secret)</pre>
+            </div>
+            <div id="python" class="code-block">
+              <pre id="code-python"><span style="color:#34d399">import</span> os
+<span style="color:#34d399">from</span> paydeck <span style="color:#34d399">import</span> PayDeckClient
+
+paydeck = <span style="color:#6ee7b7">PayDeckClient</span>(base_url=os.getenv(<span style="color:#a7f3d0">"PAYDECK_BASE_URL"</span>, <span style="color:#a7f3d0">"https://api.paydeck.dev"</span>), api_key=<span style="color:#a7f3d0">"pd_live_12345..."</span>, retries=<span style="color:#f59e0b">3</span>)
+
+<span style="color:#7f848e"># 1. Create order & customer</span>
+order = paydeck.<span style="color:#38bdf8">create_order</span>(plan=<span style="color:#a7f3d0">"pro"</span>, currency=<span style="color:#a7f3d0">"USD"</span>, idempotency_key=<span style="color:#a7f3d0">"sess_100"</span>)
+customer = paydeck.<span style="color:#38bdf8">create_customer</span>(email=<span style="color:#a7f3d0">"dev@example.com"</span>, name=<span style="color:#a7f3d0">"Jane Doe"</span>)
+
+<span style="color:#7f848e"># 2. Verify downstream webhook</span>
+is_valid = PayDeckClient.<span style="color:#38bdf8">verify_webhook_signature</span>(raw_body, signature, secret)</pre>
+            </div>
+            <div id="go" class="code-block">
+              <pre id="code-go"><span style="color:#34d399">package</span> main
+
+<span style="color:#34d399">import</span> (
+    <span style="color:#a7f3d0">"context"</span>
+    <span style="color:#a7f3d0">"os"</span>
+    <span style="color:#a7f3d0">"github.com/pisigmac/PayDeck/sdks/go/paydeck"</span>
+)
+
+<span style="color:#34d399">func</span> <span style="color:#38bdf8">main</span>() {
+    baseURL := os.Getenv(<span style="color:#a7f3d0">"PAYDECK_BASE_URL"</span>)
+    <span style="color:#34d399">if</span> baseURL == <span style="color:#a7f3d0">""</span> {
+        baseURL = <span style="color:#a7f3d0">"https://api.paydeck.dev"</span>
+    }
+    client := paydeck.<span style="color:#38bdf8">NewClient</span>(paydeck.ClientOptions{
+        BaseURL: baseURL,
+        APIKey:  <span style="color:#a7f3d0">"pd_live_12345..."</span>,
+        Retries: <span style="color:#f59e0b">3</span>,
+    })
+
+    order, err := client.<span style="color:#38bdf8">CreateOrder</span>(context.<span style="color:#38bdf8">Background</span>(), paydeck.CreateOrderInput{
+        Plan:           <span style="color:#a7f3d0">"pro"</span>,
+        IdempotencyKey: <span style="color:#a7f3d0">"sess_100"</span>,
+    })
+}</pre>
+            </div>
+            <div id="curl" class="code-block">
+              <pre id="code-curl">curl -X POST <span style="color:#a7f3d0">"$PAYDECK_BASE_URL/v1/orders"</span> \
+  -H <span style="color:#a7f3d0">"Authorization: Bearer pd_live_1234567890..."</span> \
+  -H <span style="color:#a7f3d0">"Idempotency-Key: sess_100"</span> \
+  -H <span style="color:#a7f3d0">"Content-Type: application/json"</span> \
+  -d <span style="color:#a7f3d0">'{"plan":"pro", "currency":"USD"}'</span></pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SAVINGS CALCULATOR -->
+      <section id="calculator" class="hero">
+        <div class="calc-card">
+          <h2 style="font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem;">Calculate Your Monthly Fee Savings</h2>
+          <p style="color: var(--muted);">Compare commercial SaaS billing markup (Stripe 2.9% + 30¢ / Chargebee 0.75%) vs PayDeck 0% self-hosted proxy.</p>
+
+          <div style="margin-top: 1.5rem;">
+            <label style="font-weight: 600; font-size: 1.1rem; color: #cbd5e1;">Monthly Gross Revenue: $<span id="mrr-val">50,000</span></label><br />
+            <input type="range" id="mrr-range" class="calc-slider" min="5000" max="500000" step="5000" value="50000" oninput="updateCalc()" />
+          </div>
+
+          <div class="savings-amount" id="savings-val">$1,450 / mo</div>
+          <p style="color: #94a3b8; font-size: 0.95rem;">Annual Cost Reduction: <strong id="annual-val" style="color: #fff;">$17,400</strong> per year back into your business.</p>
+        </div>
+      </section>
+
+      <!-- COMPARISON MATRIX TABLE -->
+      <section class="features">
+        <h2 class="features-title">Platform Feature Comparison</h2>
+        <table class="matrix-table">
+          <thead>
+            <tr>
+              <th>Feature Capability</th>
+              <th>PayDeck Spine</th>
+              <th>Stripe Billing</th>
+              <th>Chargebee / Paddle</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Secret Isolation Proxy</strong></td>
+              <td class="check-yes">✓ Built-in (Hashed keys)</td>
+              <td class="check-no">✗ Client handles secret keys</td>
+              <td class="check-no">✗ Client handles secret keys</td>
+            </tr>
+            <tr>
+              <td><strong>Self-Hostable Sovereignty</strong></td>
+              <td class="check-yes">✓ Docker / Node / Bun / Workers</td>
+              <td class="check-no">✗ SaaS Only</td>
+              <td class="check-no">✗ SaaS Only</td>
+            </tr>
+            <tr>
+              <td><strong>Per-Transaction SaaS Fee</strong></td>
+              <td class="check-yes">✓ 0% (Free & Open Source)</td>
+              <td class="check-no">✗ 2.9% + 30¢ / +0.5% billing</td>
+              <td class="check-no">✗ 0.5% – 5% revenue cut</td>
+            </tr>
+            <tr>
+              <td><strong>Pluggable Storage Engines</strong></td>
+              <td class="check-yes">✓ SQLite, Cloudflare D1, Postgres</td>
+              <td class="check-no">✗ Closed Proprietary DB</td>
+              <td class="check-no">✗ Closed Proprietary DB</td>
+            </tr>
+            <tr>
+              <td><strong>Persistent Webhook Redelivery Queue</strong></td>
+              <td class="check-yes">✓ Built-in (Exponential Backoff)</td>
+              <td class="check-yes">✓ Built-in</td>
+              <td class="check-yes">✓ Built-in</td>
+            </tr>
+            <tr>
+              <td><strong>Multi-Language SDKs</strong></td>
+              <td class="check-yes">✓ TypeScript, Python, Go</td>
+              <td class="check-yes">✓ TypeScript, Python, Go</td>
+              <td class="check-yes">✓ TypeScript, Python, Go</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
+
+    <footer>
+      <div>&copy; 2026 PayDeck. Released under the MIT License.</div>
+      <div>
+        <a href="/admin">Admin SPA</a> &bull;
+        <a href="/health">Health Check</a> &bull;
+        <a href="/v1/openapi.json">OpenAPI Spec</a>
+      </div>
+    </footer>
+
+    <script>
+      function showTab(id) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.code-block').forEach(b => b.classList.remove('active'));
+
+        event.target.classList.add('active');
+        document.getElementById(id).classList.add('active');
+      }
+
+      function copyActiveCode() {
+        const activeBlock = document.querySelector('.code-block.active pre');
+        if (activeBlock) {
+          navigator.clipboard.writeText(activeBlock.innerText);
+          const btn = document.querySelector('.copy-btn');
+          btn.innerText = 'Copied!';
+          setTimeout(() => btn.innerText = 'Copy Code', 2000);
+        }
+      }
+
+      function updateCalc() {
+        const mrr = parseInt(document.getElementById('mrr-range').value, 10);
+        document.getElementById('mrr-val').innerText = mrr.toLocaleString();
+        const monthlySavings = Math.round(mrr * 0.029);
+        const annualSavings = monthlySavings * 12;
+        document.getElementById('savings-val').innerText = '$' + monthlySavings.toLocaleString() + ' / mo';
+        document.getElementById('annual-val').innerText = '$' + annualSavings.toLocaleString();
+      }
+
+      async function runSimulatedRequest() {
+        const endpoint = document.getElementById('sim-endpoint').value;
+        const currency = document.getElementById('sim-currency').value;
+        const amount = document.getElementById('sim-amount').value;
+        const output = document.getElementById('sim-output');
+        const statusEl = document.getElementById('sim-status');
+
+        output.innerText = 'Executing live HTTP request...';
+
+        try {
+          let url = '/health';
+          let options = { method: 'GET' };
+
+          if (endpoint === 'plans') {
+            url = '/v1/plans';
+          } else if (endpoint === 'customers') {
+            url = '/v1/customers';
+          } else if (endpoint === 'orders') {
+            url = '/v1/orders';
+            options = {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ amount_paise: parseInt(amount, 10), currency: currency })
+            };
+          }
+
+          const res = await fetch(url, options);
+          const data = await res.json().catch(() => ({}));
+          statusEl.innerText = res.status + ' ' + (res.ok ? 'OK' : 'Error');
+          statusEl.style.color = res.ok ? '#34d399' : '#f43f5e';
+          output.innerText = JSON.stringify(data, null, 2);
+        } catch (e) {
+          statusEl.innerText = 'Error';
+          statusEl.style.color = '#f43f5e';
+          output.innerText = 'Request Error: ' + e.message;
+        }
+      }
+    </script>
+  </body>
+</html>

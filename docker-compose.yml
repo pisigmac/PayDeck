@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  paydeck:
+    build: .
+    ports:
+      - "8787:8787"
+    environment:
+      - PORT=8787
+      - DB_TYPE=sqlite
+      - DATABASE_PATH=/app/data/paydeck.db
+      - BILLING_ADMIN_TOKEN=change-me-admin-token
+      - ALLOW_DEV_CHARGE=1
+    volumes:
+      - paydeck_data:/app/data
+
+volumes:
+  paydeck_data:

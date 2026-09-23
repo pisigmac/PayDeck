@@ -1,0 +1,22 @@
+server:
+  port: 8787
+  host: "0.0.0.0"
+
+database:
+  type: "sqlite"               # options: sqlite | d1 | postgres
+  sqlite:
+    path: "./data/paydeck.db"
+  postgres:
+    url: "postgres://user:pass@localhost:5432/paydeck"
+
+razorpay:
+  key_id: ""
+  key_secret: ""
+  webhook_secret: ""
+
+admin:
+  token: "change-me-admin-token"
+
+policy:
+  default_rate_limit_per_hour: 200
+  allow_dev_charge: false

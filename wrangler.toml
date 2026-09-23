@@ -1,0 +1,22 @@
+name = "paydeck"
+main = "src/entrypoints/cloudflare.ts"
+compatibility_date = "2025-10-08"
+compatibility_flags = ["nodejs_compat"]
+
+[assets]
+directory = "./public"
+binding = "ASSETS"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "paydeck"
+database_id = "00000000-0000-0000-0000-000000000004"
+migrations_dir = "migrations"
+
+# Secrets (wrangler secret put …):
+#   BILLING_ADMIN_TOKEN
+#   RAZORPAY_KEY_ID
+#   RAZORPAY_KEY_SECRET
+#   RAZORPAY_WEBHOOK_SECRET
+# Vars:
+#   ALLOW_DEV_CHARGE=1   # local fake paid orders when Razorpay keys absent
